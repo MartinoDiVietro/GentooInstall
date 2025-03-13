@@ -1,63 +1,10 @@
 #!/bin/bash
 
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << FDISK_CMDS  | fdisk /dev/sda
-g 
-n      
-1      
-       
-+128M 
-
-n      
-2      
-        
-+512M  
-n
-3
-
-     
-t      
-1      
-1     
-t      
-2      
-19     
-w      
-FDISK_CMDS
-mkfs.fat -F 32 /dev/sda1
-mkfs.ext4 /dev/sda3
-mkswap /dev/sda2
-swapon /dev/sda2
-mount /dev/sda3 /mnt/gentoo
 cd /mnt/gentoo
-echo "Select which Stage3 you want:
-Desktop/OpenRC (1)
-Desktop/Systemd (2)
-Openrc (3)
-Systemd (4)
 
-(Default is Desktop/RC)
-"
-read stage
+wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20250309T170330Z/stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz
+tar xpvf stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz
 
-if [[ $stage != "2" && $stage != "3" && $stage != "4" ]]; then
-wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20230806T163139Z/stage3-amd64-desktop-openrc-20230806T163139Z.tar.xz
-tar xpvf stage3-amd64-desktop-openrc-20230806T163139Z.tar.xz
-fi
-
-if [[ $stage == "2" ]]; then
-wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20230806T163139Z/stage3-amd64-desktop-systemd-20230806T163139Z.tar.xz
-tar xpvf stage3-amd64-desktop-systemd-20230806T163139Z.tar.xz
-fi
-
-if [[ $stage == "3" ]]; then
-wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20230806T163139Z/stage3-amd64-openrc-20230806T163139Z.tar.xz
-tar xpvf stage3-amd64-openrc-20230806T163139Z.tar.xz
-fi
-
-if [[ $stage == "4" ]]; then
-wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20230806T163139Z/stage3-amd64-systemd-20230806T163139Z.tar.xz
-tar stage3-amd64-systemd-20230806T163139Z.tar.xz
-fi
 
 nano -w /mnt/gentoo/etc/portage/make.conf
 mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf
