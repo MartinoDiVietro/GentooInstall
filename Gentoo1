@@ -1,0 +1,108 @@
+#!/bin/bash
+
+mount /dev/sda1 /boot
+emerge-webrsync
+emerge --sync
+eselect profile list
+echo "Insert the profile number"
+read s
+eselect profile set $s
+emerge --verbose --update --deep --newuse @world
+emerge app-portage/cpuid2cpuflags
+echo "*/* $(cpuid2cpuflags)" > /etc/portage/package.use/00cpu-flags
+echo "Insert your timezone (example: Europe/Rome)"
+read timezonein
+echo $timezonein > /etc/timezone
+emerge --config sys-libs/timezone-data
+nano -w /etc/locale.gen
+locale-gen
+eselect locale list
+echo "Insert the locale number"
+read n
+eselect locale set $n
+env-update && source /etc/profile && export PS1="(chroot) ${PS1}"
+mkdir /etc/portage/package.license
+touch /etc/portage/package.license/linux-firmware
+echo sys-kernel/linux-firmware linux-fw-redistributable >> /etc/portage/package.license/linux-firmware 
+emerge sys-kernel/linux-firmware
+emerge sys-kernel/installkernel-gentoo
+emerge sys-kernel/gentoo-kernel-bin
+emerge --depclean
+emerge @module-rebuild
+emerge --config sys-kernel/gentoo-kernel-bin
+echo "Did it work? If it did not work, type no"
+read input
+if [[ $input == "no" ]]; then
+emerge --ask sys-kernel/gentoo-sources
+eselect kernel set 1
+emerge --ask sys-kernel/genkernel
+genkernel --mountboot --install all
+fi
+echo "
+/dev/sda1   /boot        vfat    defaults,noatime     0 2
+/dev/sda2   none         swap    sw                   0 0
+/dev/sda3   /            ext4    noatime              0 1
+/dev/cdrom  /mnt/cdrom   auto    noauto,user          0 0" >> /etc/fstab
+echo Gentoo > /etc/hostname
+emerge net-misc/dhcpcd
+echo "Which init-system did you choose?
+OpenRC (1)
+System (2)
+
+(Default is OpenRC)
+"
+read init
+if [[ $init != "2" ]]; then
+rc-update add dhcpcd default
+rc-service dhcpcd start
+emerge --noreplace net-misc/netifrc
+fi
+
+if [[ $init == "2" ]]; then
+systemctl enable --now dhcpcd
+fi
+
+echo "Insert root password"
+passwd
+nano /etc/conf.d/keymaps
+nano /etc/conf.d/hwclock
+emerge app-admin/sysklogd
+emerge sys-process/cronie
+emerge sys-apps/mlocate
+emerge net-misc/chrony
+if [[ $init != "2" ]]; then
+rc-update add sysklogd default
+rc-update add cronie default
+rc-update add sshd default
+rc-update add chronyd default
+fi 
+
+if [[ $init == "2" ]]; then
+systemd-firstboot --prompt --setup-machine-id
+systemctl preset-all --preset-mode=enable-only
+systemctl enable sshd
+systemctl enable getty@tty1.service
+systemctl enable chronyd.service
+fi
+
+echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
+emerge sys-boot/grub
+grub-install --target=x86_64-efi --efi-directory=/boot
+echo "Did it work? If it did not work, type no"
+read in
+if [[ $in == "no" ]]; then
+mount -o remount,rw,nosuid,nodev,noexec --types efivarfs efivarfs /sys/firmware/efi/efivars
+fi
+echo "Did it work? If it did not work, type no"
+read inp
+if [[ $inp == "no" ]]; then
+grub-install --target=x86_64-efi --efi-directory=/boot --removable
+fi
+grub-mkconfig -o /boot/grub/grub.cfg
+echo "Now type these three commands, the installation is finished :-)
+exit
+cd
+umount -l /mnt/gentoo/dev{/shm,/pts,}
+umount -R /mnt/gentoo
+reboot
+"
