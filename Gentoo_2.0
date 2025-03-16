@@ -1,0 +1,114 @@
+#!/bin/bash
+
+mkfs.fat -F 32 /dev/sda1
+mkfs.xfs /dev/sda3
+mkswap /dev/sda2
+swapon /dev/sda2
+
+
+
+mount /dev/sda3 /mnt/gentoo
+mkdir --parents /mnt/gentoo/efi
+cd /mnt/gentoo
+wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20250309T170330Z/stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz
+tar xpvf stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz--xattrs-include='*.*' --numeric-owner -C /mnt/gentoo
+
+
+
+nano -w /mnt/gentoo/etc/portage/make.conf
+mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf
+cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
+arch-chroot /mnt/gentoo
+#mount --types proc /proc /mnt/gentoo/proc
+#mount --rbind /sys /mnt/gentoo/sys
+#mount --make-rslave /mnt/gentoo/sys
+#mount --rbind /dev /mnt/gentoo/dev
+#mount --make-rslave /mnt/gentoo/dev
+#mount --bind /run /mnt/gentoo/run
+#mount --make-slave /mnt/gentoo/run
+echo 'Now, type these commands:
+source /etc/profile
+export PS1="(chroot) ${PS1}"
+wget https://raw.githubusercontent.com/MartinoDiVietro/Gentoo/main/Gentoo1
+chmod +x Gentoo1
+./Gentoo1
+'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
