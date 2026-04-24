@@ -10,8 +10,8 @@ swapon /dev/sda2
 mount /dev/sda3 /mnt/gentoo
 mkdir --parents /mnt/gentoo/efi
 cd /mnt/gentoo
-wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20250309T170330Z/stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz
-tar xpvf stage3-amd64-desktop-openrc-20250309T170330Z.tar.xz--xattrs-include='*.*' --numeric-owner -C /mnt/gentoo
+wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20260419T164601Z/stage3-amd64-desktop-openrc-20260419T164601Z.tar.xz
+tar xpvf stage3-amd64-desktop-openrc-20260419T164601Z.tar.xz--xattrs-include='*.*' --numeric-owner -C /mnt/gentoo
 
 
 
