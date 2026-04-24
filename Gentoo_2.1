@@ -14,10 +14,10 @@ echo "Insert the locale number"
 read n
 eselect locale set $n
 env-update && source /etc/profile && export PS1="(chroot) ${PS1}"
-mkdir /etc/portage/package.license
-touch /etc/portage/package.license/License
-echo sys-kernel/linux-firmware linux-fw-redistributable >> /etc/portage/package.license/License 
-emerge sys-kernel/linux-firmware
+#mkdir /etc/portage/package.license
+#touch /etc/portage/package.license/License
+#echo sys-kernel/linux-firmware linux-fw-redistributable >> /etc/portage/package.license/License 
+#emerge sys-kernel/linux-firmware
 emerge sys-kernel/installkernel
 emerge sys-kernel/gentoo-kernel-bin
 emerge --depclean
