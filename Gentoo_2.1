@@ -40,15 +40,6 @@ echo Gentoo > /etc/hostname
 
 echo "Insert root password"
 passwd
-nano /etc/conf.d/keymaps
-emerge app-admin/sysklogd
-emerge sys-process/cronie
-emerge sys-apps/mlocate
-emerge net-misc/chrony
-rc-update add sysklogd default
-rc-update add cronie default
-rc-update add chronyd default
-
 
 echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 grub-install --target=x86_64-efi --efi-directory=/efi
